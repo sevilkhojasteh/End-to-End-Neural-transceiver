@@ -19,3 +19,10 @@ noise_r = tf.random.normal(shape=s.shape, mean=0.0, stddev=sigma / tf.sqrt(2.0))
 noise_i = tf.random.normal(shape=s.shape, mean=0.0, stddev=sigma / tf.sqrt(2.0))
 
 n = tf.complex(noise_r, noise_i)
+
+# Recieved signal: r = h*s + n
+r = y_phase + n
+
+print("Transmitted symbols (s):", s.numpy())
+print("Channel coefficient (h):", h.numpy())
+print("Received symbols (r)   :", r.numpy())
