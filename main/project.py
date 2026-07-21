@@ -65,7 +65,7 @@ class Classical5GLink(tf.keras.Model):
 
 
 # Loading the 3D scene
-from sionna.rt import load_scene
+from sionna.rt import load_scene, PlanarArray, Transmitter, Receiver
 
 # Load the built-in 3D model of Munich, Germany
 scene = load_scene(sn.rt.scene.munich)
@@ -76,3 +76,21 @@ and terrain in downtown Munich. The computer knows whether a building is made of
 
 """
 
+# Define a 4x4 grid of antennas (16 antennas total)
+scene.tx_array = PlanarArray(
+    num_rows=4, 
+    num_cols=4, 
+    vertical_spacing=0.5,   # Spacing between antennas (measured in wavelengths)
+    horizontal_spacing=0.5, # Spacing between antennas
+    pattern="dipole"        # The shape of each antenna's radiation pattern
+)
+
+# 1. Place a Transmitter (gNodeB cell tower) on a tall building roof (30 meters high)
+tx = Transmitter(name="gNodeB", position=[50.0, 50.0, 30.0])
+
+# 2. Place a Receiver (User Equipment - UE) at street level (1.5 meters high)
+rx = Receiver(name="UE", position=[120.0, 80.0, 1.5])
+
+# Add them to our Munich map
+scene.add(tx)
+scene.add(rx)
