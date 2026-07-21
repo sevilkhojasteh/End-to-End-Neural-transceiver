@@ -1,3 +1,10 @@
 import tensorflow as tf
+import sionna as sn
 
-print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+class Classical5GLink(tf.keras.Model):
+    def __init__(self, k, n, num_bits_per_symbol):
+        super(Classical5GLink, self).__init__()
+        self.k = k # Information bits
+        self.n = n # Codeword bits
+
+        
