@@ -37,5 +37,42 @@ class Classical5GLink(tf.keras.Model):
         self.channel = sn.phy.channel.AWGN()
 
     def call(self, batch_size, ebno_db):
+        # Step 1: Generate random binary bits (0s and 1s)
+        # Shape: [Batch_Size, K]
+        bits = sn.utils.binary_source([batch_size, self.k])
         
+        # Step 2: Run the Spell-Checker (Add redundancy)
+        # Converts self.k bits to self.n bits
+        codeword = self.encoder(bits)
+        
+        # Step 3: Map bits to complex wave coordinates (I/Q symbols)
+        x = self.mapper(codeword)
+        
+        # Step 4: Calculate the noise level (No) from our Eb/No in dB
+        coderate = self.k / self.n  # Percentage of useful bits
+        no = sn.utils.ebnodb2no(ebno_db, num_bits_per_symbol=2, coderate=coderate)
+        
+        # Step 5: Add noise in the air
+        y = self.channel([x, no])
+        
+        # Step 6: Demap received coordinates back to bit likelihoods (LLRs)
+        llr = self.demapper([y, no])
+        
+        # Step 7: Decode LLRs back to clean bits
+        decoded_bits = self.decoder(llr)
+        
+        return bits, decoded_bits
+
+
+# Loading the 3D scene
+from sionna.rt import load_scene
+
+# Load the built-in 3D model of Munich, Germany
+scene = load_scene(sn.rt.scene.munich)
+
+"""
+The Scene: This is a 3D mesh map containing the exact coordinates and materials of buildings, streets, 
+and terrain in downtown Munich. The computer knows whether a building is made of concrete or glass because different materials reflect radio waves differently!
+
+"""
 
