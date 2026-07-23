@@ -162,3 +162,41 @@ class NeuralRx(tf.keras.layers.Layer):
         return predictions
     
 
+# Phase 5
+# At each training epoch, we randomly select an SNR between 5dB (noisy) and 15dB(clean)
+ebno_train = tf.random.uniform(shape=(), minval=5.0, maxval=15.0)
+
+@tf.function # Tells TensorFlow to compile this into ultra-fast machine code
+def train_step(batch_size, ebno_db, channel_model):
+    # 1. Generate random binary bits (0 or 1)
+    bits = sn.utils.binary_source([batch_size, k])
+    
+    # 2. Open our Flight Recorder (tape)
+    with tf.GradientTape() as tape:
+        # Step A: Neural Tx maps bits to complex symbols
+        tx_symbols = tx_net(bits)
+        
+        # Step B: Apply Rapp Power Amplifier hardware clipping (non-linear)
+        tx_symbols_distorted = sn.phy.utils.rapp_pa(tx_symbols, v_sat=1.0, p=2.0)
+        
+        # Step C: Pass through the 3D Ray-Traced Channel (fading)
+        rx_symbols_faded = channel_model(tx_symbols_distorted)
+        
+        # Step D: Add AWGN Noise
+        no = sn.utils.ebnodb2no(ebno_db, num_bits_per_symbol=2, coderate=1.0)
+        noisy_rx_symbols = sn.phy.channel.AWGN()([rx_symbols_faded, no])
+        
+        # Step E: Neural Rx decodes received noisy symbols
+        predictions = rx_net(noisy_rx_symbols)
+        
+        # Step F: Calculate Binary Cross-Entropy (BCE) Loss
+        loss = bce_loss(bits, predictions)
+        
+    # 3. Read the Flight Recorder to calculate gradients for ALL weights in Tx & Rx
+    trainable_variables = tx_net.trainable_variables + rx_net.trainable_variables
+    gradients = tape.gradient(loss, trainable_variables)
+    
+    # 4. Optimizer adjusts the weights to reduce the loss
+    optimizer.apply_gradients(zip(gradients, trainable_variables))
+    
+    return loss
