@@ -94,3 +94,40 @@ rx = Receiver(name="UE", position=[120.0, 80.0, 1.5])
 # Add them to our Munich map
 scene.add(tx)
 scene.add(rx)
+
+# Shoot rays in a specific mathematically spaced pattern (Fibonacci)
+# Compute paths up to 3 bounces (max_depth=3)
+ray_tracer = scene.compute_paths(method="fibonacci", max_depth=3)
+
+# Build our physical channel model from these computed ray paths
+channel_model = sn.rt.PropagationModel(ray_tracer)
+
+"""
+max_depth=3: Tells the computer to track rays that bounce up to 3 times before hitting the receiver.
+channel_model: This is the final output. It is a highly accurate, physical LTI system model (like we studied in Tier 2!) representing the exact real-world city environment.
+
+"""
+
+# The Transmitter
+
+class NeuralTx(tf.keras.layers.Layer):
+    def __init__(self, num_symbols):
+        super(NeuralTx, self).__init__()
+        self.num_symbols = num_symbols
+
+        # Hidden layer to learn constellation mappings
+        self.dense1 = tf.keras.layers.Dense(64, activation='relu')
+        # Output layer. Each complex symbol has 2 parts (Real, Imag)
+        self.dense2 = tf.keras.layers.Dense(self.num_symbols * 2, activation=None)
+    
+    def call(self, inputs):
+        x = self.dense1(inputs)
+        x = self.dense2
+
+        # Reshape to separate real and imaginary parts
+        # New shape: [batch_size, 8 symbols, 2 parts]
+
+        x = tf.reshape(x, [-1, self.num_symbols, 2])
+
+        # construct the comples symbols: s = I + jQ
+        symbols = tf.complex(x[..., 0], x[..., 1])
