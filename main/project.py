@@ -131,3 +131,34 @@ class NeuralTx(tf.keras.layers.Layer):
 
         # construct the comples symbols: s = I + jQ
         symbols = tf.complex(x[..., 0], x[..., 1])
+
+        # Calculate the average power of our generated complex symbols
+        mean_power = tf.reduce_mean(tf.square(tf.abs(symbols)))
+
+        # Normalize: divide sumbols by the square root of average power
+        # This forces the average power to be exactly 1.0!
+        normalized_symbols = symbols / tf.cast(tf.sqrt(mean_power), tf.complex64)
+        return normalized_symbols
+    
+
+class NeuralRx(tf.keras.layers.Layer):
+    def __init__(self, k):
+        super(NeuralRx, self).__init__()
+        self.k = k
+        self.dense1 = tf.keras.layers.Dense(128, activation='relu')
+        self.dense2 = tf.keras.layers.Dense(64, activation='relu')
+        # Output layer: output k nodes
+        self.dense3 = tf.keras.layers.Dense(self.k, activation='sigmoid')
+
+    def call(self, inputs):
+        # 1. Split complex numbers into real and imaginary parts
+        x = tf.stack([tf.real(inputs), tf.imag(inputs)], axis=-1)
+        x = tf.reshape(x, [tf.shape(inputs)[0], -1]) # Flatten to 2D
+        
+        # 2. Pass through hidden layers and output bit probabilities
+        x = self.dense1(x)
+        x = self.dense2(x)
+        predictions = self.dense3(x)
+        return predictions
+    
+
