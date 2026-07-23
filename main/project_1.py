@@ -38,3 +38,28 @@ class NeuralTransmitter(tf.keras.layers.Layer):
 
         x = tf.reshape(x, [-1, self.num_symbols, 2])
         symbols = tf.complex(x[..., 0], x[..., 1])
+
+        mean_power = tf.reduce_mean(tf.square(tf.abs(symbols)))
+        normalized_symbols = symbols / tf.cast(tf.sqrt(mean_power), tf.complex64)
+        return normalized_symbols
+    
+class NeuralReceiver(tf.keras.layers.Layer):
+    def __init__(self, k, **kwargs):
+        super(NeuralReceiver, self).__init__(**kwargs)
+        self.k = k
+
+    def build(self, input_shape):
+        self.dense1 = tf.keras.layers.Dense(128, activation='relu')
+        self.dense2 = tf.keras.layers.Dense(64, activation='relu')
+        self.dense3 = tf.keras.layers.Dense(self.k, activation='sigmoid') # Sigmoid squashes output to (0, 1) representing probability
+        super(NeuralReceiver, self).build(input_shape)
+
+    def call(self, inputs):
+        x = tf.stack([tf.math.real(inputs), tf.math.imag(inputs)], axis=-1)
+        x = tf.reshape(x, [tf.shape(inputs)[0], -1])
+
+        x = self.dense1(x)
+        x = self.dense2(x)
+        predictions = self.dense3(x) # Output shape: [Batch_Size, K]
+        return predictions
+
