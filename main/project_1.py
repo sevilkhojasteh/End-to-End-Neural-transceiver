@@ -68,4 +68,12 @@ decoder = NeuralReceiver(k=K)
 optimizer = tf.keras.optimizers.Adam(learning_rate=LR)
 bce_loss = tf.keras.losses.BinaryCrossentropy()
 
+@tf.function
+def train_step(batch_size, ebno_db):
+    bits = tf.random.uniform(shape=[batch_size, K], minval=0, maxval=2, dtype=tf.int32)
+    bits_float = tf.cast(bits, tf.float32)
 
+    with tf.GradientTape as tape:
+        tx_symbols = encoder(bits_float)
+        tx_distorted = rapp_power_amplifier(tx_symbols, v_sat=1.0, p=2.0)
+        
