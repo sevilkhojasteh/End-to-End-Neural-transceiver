@@ -76,4 +76,6 @@ def train_step(batch_size, ebno_db):
     with tf.GradientTape as tape:
         tx_symbols = encoder(bits_float)
         tx_distorted = rapp_power_amplifier(tx_symbols, v_sat=1.0, p=2.0)
-        
+        h_real = tf.random.normal(shape=[batch_size, 1], mean=0.0, stddev=1.0 / np.sqrt(2))
+        h_imag = tf.random.normal(shape=[batch_size, 1], mean=0.0, stddev=1.0 / np.sqrt(2))
+        h = tf.complex(h_real, h_imag)
