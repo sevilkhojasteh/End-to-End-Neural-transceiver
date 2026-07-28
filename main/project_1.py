@@ -63,3 +63,9 @@ class NeuralReceiver(tf.keras.layers.Layer):
         predictions = self.dense3(x) # Output shape: [Batch_Size, K]
         return predictions
 
+encoder = NeuralTransmitter(num_symbols=NUM_SYMBOLS)
+decoder = NeuralReceiver(k=K)
+optimizer = tf.keras.optimizers.Adam(learning_rate=LR)
+bce_loss = tf.keras.losses.BinaryCrossentropy()
+
+
