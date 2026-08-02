@@ -85,3 +85,7 @@ def train_step(batch_size, ebno_db):
         snr_linear = 10.0 ** (ebno_db / 10.0)
         r = K / NUM_SYMBOLS
         sigma = tf.sqrt(1.0 / (2.0 * r * snr_linear))
+
+        noise_r = tf.random.normal(shape=tf.shape(faded_symbols), mean=0.0, stddev=sigma)
+        noise_i = tf.random.normal(shape=tf.shape(faded_symbols), mean=0.0, stddev=sigma)
+        noise = tf.complex(noise_r, noise_i)
