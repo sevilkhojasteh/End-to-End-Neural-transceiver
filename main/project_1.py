@@ -98,4 +98,7 @@ def train_step(batch_size, ebno_db):
         
         # Step G: Compute Loss
         loss = bce_loss(bits_float, predictions)
-        
+    
+    trainable_variables = encoder.trainable_variables + decoder.trainable_variables
+    gradients = tape.gradient(loss, trainable_variables)
+    optimizer.apply_gradients(zip(gradients, trainable_variables))
