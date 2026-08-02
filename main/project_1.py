@@ -89,3 +89,13 @@ def train_step(batch_size, ebno_db):
         noise_r = tf.random.normal(shape=tf.shape(faded_symbols), mean=0.0, stddev=sigma)
         noise_i = tf.random.normal(shape=tf.shape(faded_symbols), mean=0.0, stddev=sigma)
         noise = tf.complex(noise_r, noise_i)
+        rx_symbols = faded_symbols + noise
+
+        rx_equalized = rx_symbols / h
+        
+        # Step F: Neural Receiver decodes predictions
+        predictions = decoder(rx_equalized)
+        
+        # Step G: Compute Loss
+        loss = bce_loss(bits_float, predictions)
+        
