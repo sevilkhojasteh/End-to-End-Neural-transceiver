@@ -149,3 +149,4 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
         decoded_bits = tf.cast(predictions >= 0.5, tf.int32)
 
         total_bits = eval_batch_size * K
+        bit_errors = tf.reduce_sum(tf.cast(bits != decoded_bits, tf.int32))
