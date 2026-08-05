@@ -135,3 +135,10 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
         h_imag = tf.random.normal(shape=[eval_batch_size, 1], mean=0.0, stddev=1.0 / np.sqrt(2))
         h = tf.complex(h_real, h_imag)
         faded_symbols = tx_symbols * h 
+
+        snr_linear = 10.0 ** (ebno / 10.0)
+        r = K / NUM_SYMBOLS
+        sigma = tf.sqrt(1.0 / (2.0 * r * snr_linear))
+        noise_r = tf.random.normal(shape=tf.shape(faded_symbols), stddev=sigma)
+        noise_i = tf.random.normal(shape=tf.shape(faded_symbols), stddev=sigma)
+        rx_symbols = faded_symbols + tf.complex(noise_r, noise_i)
