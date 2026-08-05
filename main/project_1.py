@@ -127,3 +127,7 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
         bits_float = tf.cast(bits, tf.float32)
 
         tx_symbols = encoder(bits_float)
+
+        if use_rapp_pa:
+            tx_symbols = rapp_power_amplifier(tx_symbols, v_sat=1.0, p=2.0)
+            
