@@ -114,3 +114,9 @@ for epoch in range(1, EPOCHS + 1):
     
     if epoch % 100 == 0 or epoch == 1:
         print(f"Epoch {epoch:04d} / {EPOCHS} | Train Eb/No: {ebno_train.numpy():.2f} dB | Loss (BCE): {loss.numpy():.4f}")
+
+
+def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
+    ber_list = []
+    # Evaluate over 10,000 parallel blocks for extreme precision
+    eval_batch_size = 10000 
