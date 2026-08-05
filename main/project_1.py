@@ -130,4 +130,8 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
 
         if use_rapp_pa:
             tx_symbols = rapp_power_amplifier(tx_symbols, v_sat=1.0, p=2.0)
-            
+
+        h_real = tf.random.normal(shape=[eval_batch_size, 1], mean=0.0, stddev=1.0 / np.sqrt(2))
+        h_imag = tf.random.normal(shape=[eval_batch_size, 1], mean=0.0, stddev=1.0 / np.sqrt(2))
+        h = tf.complex(h_real, h_imag)
+        faded_symbols = tx_symbols * h 
