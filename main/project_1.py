@@ -125,3 +125,5 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
         # Generate random evaluation bits
         bits = tf.random.uniform(shape=[eval_batch_size, K], minval=0, maxval=2, dtype=tf.int32)
         bits_float = tf.cast(bits, tf.float32)
+
+        tx_symbols = encoder(bits_float)
