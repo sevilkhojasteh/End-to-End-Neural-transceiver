@@ -120,3 +120,8 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
     ber_list = []
     # Evaluate over 10,000 parallel blocks for extreme precision
     eval_batch_size = 10000 
+
+    for ebno in ebno_db_range:
+        # Generate random evaluation bits
+        bits = tf.random.uniform(shape=[eval_batch_size, K], minval=0, maxval=2, dtype=tf.int32)
+        bits_float = tf.cast(bits, tf.float32)
