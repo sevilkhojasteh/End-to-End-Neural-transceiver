@@ -144,3 +144,5 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
         rx_symbols = faded_symbols + tf.complex(noise_r, noise_i)
 
         rx_equalized = rx_symbols / h
+
+        predictions = decoder(rx_equalized)
