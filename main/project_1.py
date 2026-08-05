@@ -152,3 +152,5 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
         bit_errors = tf.reduce_sum(tf.cast(bits != decoded_bits, tf.int32))
         ber = bit_errors / total_bits
         ber_list.append(ber.numpy())
+
+    return ber_list
