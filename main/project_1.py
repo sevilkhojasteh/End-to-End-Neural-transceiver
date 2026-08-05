@@ -146,3 +146,4 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
         rx_equalized = rx_symbols / h
 
         predictions = decoder(rx_equalized)
+        decoded_bits = tf.cast(predictions >= 0.5, tf.int32)
