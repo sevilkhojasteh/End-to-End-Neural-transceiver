@@ -194,3 +194,7 @@ def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
         distances = np.abs(rx_expanded - const_expanded) # Shape: [batch, symbols, 4]
         decoded_indices = np.argmin(distances, axis=-1)  # Shape: [batch, symbols]
         
+        decoded_bits = np.zeros_like(grouped_bits)
+        decoded_bits[..., 0] = decoded_indices // 2
+        decoded_bits[..., 1] = decoded_indices % 2
+        decoded_bits = decoded_bits.reshape(eval_batch_size, K)
