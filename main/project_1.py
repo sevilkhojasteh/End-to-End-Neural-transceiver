@@ -170,3 +170,9 @@ def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
         indices = grouped_bits[..., 0] * 2 + grouped_bits[..., 1]
 
         tx_symbols = constellation[indices]
+
+        if use_rapp_pa:
+            # Apply Rapp PA scaling
+            amplitude = np.abs(tx_symbols)
+            scaling = 1.0 / np.power(1.0 + np.power(amplitude / 1.0, 4.0), 1.0 / 4.0)
+            tx_symbols = tx_symbols * scaling
