@@ -176,3 +176,6 @@ def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
             amplitude = np.abs(tx_symbols)
             scaling = 1.0 / np.power(1.0 + np.power(amplitude / 1.0, 4.0), 1.0 / 4.0)
             tx_symbols = tx_symbols * scaling
+
+        h = (np.random.normal(0, 1.0, (eval_batch_size, 1)) + 1j * np.random.normal(0, 1.0, (eval_batch_size, 1))) / np.sqrt(2.0)
+        faded_symbols = tx_symbols * h
