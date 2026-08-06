@@ -179,3 +179,9 @@ def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
 
         h = (np.random.normal(0, 1.0, (eval_batch_size, 1)) + 1j * np.random.normal(0, 1.0, (eval_batch_size, 1))) / np.sqrt(2.0)
         faded_symbols = tx_symbols * h
+
+        snr_linear = 10.0 ** (ebno / 10.0)
+        r = 2.0 # 2 bits per symbol for QPSK
+        sigma = np.sqrt(1.0 / (2.0 * r * snr_linear))
+        noise = (np.random.normal(0, sigma, faded_symbols.shape) + 1j * np.random.normal(0, sigma, faded_symbols.shape))
+        rx_symbols = faded_symbols + noise
