@@ -154,3 +154,8 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
         ber_list.append(ber.numpy())
 
     return ber_list
+
+
+def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
+    ber_list = []
+    eval_batch_size = 10000
