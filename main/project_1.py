@@ -187,3 +187,10 @@ def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
         rx_symbols = faded_symbols + noise
 
         rx_equalized = rx_symbols / h
+
+        rx_expanded = np.expand_dims(rx_equalized, axis=-1)       # Shape: [batch, symbols, 1]
+        const_expanded = np.expand_dims(constellation, axis=(0,1)) # Shape: [1, 1, 4]
+        
+        distances = np.abs(rx_expanded - const_expanded) # Shape: [batch, symbols, 4]
+        decoded_indices = np.argmin(distances, axis=-1)  # Shape: [batch, symbols]
+        
