@@ -185,3 +185,5 @@ def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
         sigma = np.sqrt(1.0 / (2.0 * r * snr_linear))
         noise = (np.random.normal(0, sigma, faded_symbols.shape) + 1j * np.random.normal(0, sigma, faded_symbols.shape))
         rx_symbols = faded_symbols + noise
+
+        rx_equalized = rx_symbols / h
