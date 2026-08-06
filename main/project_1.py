@@ -198,3 +198,7 @@ def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
         decoded_bits[..., 0] = decoded_indices // 2
         decoded_bits[..., 1] = decoded_indices % 2
         decoded_bits = decoded_bits.reshape(eval_batch_size, K)
+
+        bit_errors = np.sum(bits != decoded_bits)
+        ber = bit_errors / (eval_batch_size * K)
+        ber_list.append(ber)
