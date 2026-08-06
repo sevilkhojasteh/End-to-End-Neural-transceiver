@@ -165,3 +165,6 @@ def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
     for ebno in ebno_db_range:
         # Generate random bits (2 bits per symbol, so K = 16 bits = 8 QPSK symbols)
         bits = np.random.randint(0, 2, size=(eval_batch_size, K))
+
+        grouped_bits = bits.reshape(eval_batch_size, NUM_SYMBOLS, 2)
+        indices = grouped_bits[..., 0] * 2 + grouped_bits[..., 1]
