@@ -168,3 +168,5 @@ def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
 
         grouped_bits = bits.reshape(eval_batch_size, NUM_SYMBOLS, 2)
         indices = grouped_bits[..., 0] * 2 + grouped_bits[..., 1]
+
+        tx_symbols = constellation[indices]
