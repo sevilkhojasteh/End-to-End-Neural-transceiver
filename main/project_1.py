@@ -159,3 +159,9 @@ def evaluate_neural_transceiver(ebno_db_range, use_rapp_pa=True):
 def evaluate_classical_baseline(ebno_db_range, use_rapp_pa=True):
     ber_list = []
     eval_batch_size = 10000
+
+    constellation = np.array([-1.0-1.0j, -1.0+1.0j, 1.0-1.0j, 1.0+1.0j]) / np.sqrt(2.0)
+    
+    for ebno in ebno_db_range:
+        # Generate random bits (2 bits per symbol, so K = 16 bits = 8 QPSK symbols)
+        bits = np.random.randint(0, 2, size=(eval_batch_size, K))
